@@ -6,6 +6,7 @@ use App\Filament\Resources\PenjadwalanResource\Pages;
 use App\Filament\Resources\PenjadwalanResource\RelationManagers;
 use App\Models\Penjadwalan;
 use Filament\Forms;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,59 +24,64 @@ class PenjadwalanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\DatePicker::make('tanggal')
-                ->label('Tangga')
-                ->required(),
-            Forms\Components\TimePicker::make('waktu')
-                ->label('Waktu')
-                ->required(),
-            Forms\Components\TextInput::make('no_order')
-                ->label('Number Order'),
-            Forms\Components\Select::make('order_type')
-                ->label('Tipe Order')
-                ->options([
-                    'kerjasama' => 'Kerjasama',
-                    'walkin' => 'Walk-in',
-                    'online' => 'Online',
-                    'reserve' => 'Reserve',
-                ])
-                ->required(),
-            Forms\Components\TextInput::make('nama_pelanggan')
-                ->label('Nama Customer')
-                ->required(),
-            Forms\Components\TextInput::make('no_hp')
-                ->label('Hp Customer')
-                ->tel()
-                ->required(),
-            Forms\Components\Select::make('kategori_id')
-                ->label('Kategori')
-                ->relationship('kategori', 'name') // Asumsikan ada relasi dengan model Category
-                ->required(),
-            Forms\Components\Select::make('subkategori_id')
-                ->label('Subkategori')
-                ->relationship('subkategori', 'name') // Asumsikan ada relasi dengan model Subcategory
-                ->required(),
-            Forms\Components\Select::make('produk_id')
-                ->label('Produk')
-                ->relationship('produk', 'name') // Asumsikan ada relasi dengan model Product
-                ->required(),
-            Forms\Components\TextInput::make('nama_paket')
-                ->label('Paket'),
-            Forms\Components\TextInput::make('keterangan')
-                ->label('keterangan'),
-            Forms\Components\Select::make('status')
-                ->label('Status')
-                ->options([
-                    'pending' => 'Pending',
-                    'done' => 'Done',
-                    'cancel' => 'Cancel',
-                    'confirmed' => 'Confirmed',
-                ])
-                ->default('pending')
-                ->required(),
-            Forms\Components\Select::make('users_id')
-                ->relationship('users', 'name')
-                ->required(),
+                Tabs::make('Penjadwalan')
+                        ->tabs([
+                            Tabs\Tab::make('Data Penjadwalan')
+                                 ->badgeColor('success')
+                                ->schema([
+                                    Forms\Components\DatePicker::make('tanggal') 
+                                        ->label('Tanggal') 
+                                        ->required(),
+                                    Forms\Components\TimePicker::make('waktu') ->label('Waktu') ->required(), 
+                                    Forms\Components\TextInput::make('no_order') ->label('Number Order'), 
+                                    Forms\Components\Select::make('order_type') 
+                                    ->label('Tipe Order') 
+                                    ->options([ 'kerjasama' => 'Kerjasama', 'walkin' => 'Walk-in', 'online' => 'Online', 'reserve' => 'Reserve', ]) 
+                                    ->required(), 
+                                    Forms\Components\TextInput::make('nama_pelanggan') 
+                                        ->label('Nama Customer') ->required(), 
+                                    Forms\Components\TextInput::make('no_hp') 
+                                        ->label('Hp Customer') ->tel() ->required(), 
+                                    Forms\Components\Select::make('kategori_id') ->label('Kategori') 
+                                        ->relationship('kategori', 'name'), 
+                                    Forms\Components\Select::make('subkategori_id')
+                                         ->label('Subkategori') 
+                                         ->relationship('subkategori', 'name') 
+                                         ->required(), 
+                                    Forms\Components\Select::make('produk_id') 
+                                        ->label('Produk') ->relationship('produk', 'name') 
+                                        ->required(), 
+                                    Forms\Components\TextInput::make('nama_paket') 
+                                        ->label('Nama Paket'),
+                                    Forms\Components\richEditor::make('keterangan') 
+                                        ->label('Keterangan'), 
+                                    Forms\Components\Select::make('status') 
+                                        ->label('Status') 
+                                        ->options([ 'pending' => 'Pending', 'done' => 'Done', 'cancel' => 'Cancel', 'confirmed' => 'Confirmed', ]) ->default('pending') ->required(), 
+                                    Forms\Components\Select::make('user_id') 
+                                        ->relationship('user', 'name')
+                                        ->reactive()
+                                         ->required(),
+
+                                ]),
+                            Tabs\Tab::make('Data Pegawai')
+                                ->schema([
+                                    Forms\Components\Repeater::make('pegawai')
+                                        ->schema([
+                                            Forms\Components\TextInput::make('name')
+                                                ->required()
+                                                ->maxLength(255),
+                                            Forms\Components\TextInput::make('jabatan')
+                                                ->required()
+                                                ->maxLength(255),
+                                        ])
+                                        ->columns(3)
+                                ]),
+                            Tabs\Tab::make('Tab 3')
+                                ->schema([
+                                    // ...
+                                ]),
+                        ]) ->columnSpan(2),
             ]);
     }
 
@@ -95,7 +101,7 @@ class PenjadwalanResource extends Resource
                 Tables\Columns\TextColumn::make('nama_paket'),
                 Tables\Columns\TextColumn::make('keterangan'),
                 Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('users.name'),
+                Tables\Columns\TextColumn::make('user.name'),
             ])
             ->filters([
                 //

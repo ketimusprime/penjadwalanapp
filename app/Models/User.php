@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function penjadwalan()
+    {
+        return $this->hasMany(penjadwalan::class);
+    }
 }
